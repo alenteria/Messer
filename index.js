@@ -10,7 +10,8 @@ const exec = require('child_process').exec;
 let api = {}
 let user = {}
 let lastThread = null
-let lastRecipient = null
+let chatSessionWith = null
+let lastReceiverName = null
 
 /* Command type constants */
 const commandEnum = {
@@ -100,21 +101,22 @@ function handleMessage(message) {
 		messageBody = message.body
 	}
 
-	if (lastRecipient != sender){
+	if (chatSessionWith != sender){
 		console.log('')
-		console.log("\x1b[32m", sender, "\x1b[34m", (new Date()).toLocaleString(), "\x1b[0m")
+		console.log("*", "\x1b[1m", "\x1b[32m", sender, "\x1b[34m", (new Date()).toLocaleString(), "\x1b[0m")
 	}
 
 	if (message.attachments.length == 0) {
 		console.log("")
-		console.log("\x1b[46m", sender, "\x1b[0m", ": "+(messageBody || unrenderableMessage))
+		console.log("\x1b[1m", "\x1b[46m", sender, "\x1b[0m", ": "+(messageBody || unrenderableMessage))
 	} else {
 		console.log("")
-		console.log("\x1b[46m", sender, "\x1b[0m", ": "+(messageBody || unrenderableMessage))
+		console.log("\x1b[1m", "\x1b[46m", sender, "\x1b[0m", ": "+(messageBody || unrenderableMessage))
 	}
 
 	lastThread = message.threadID
-	lastRecipient = sender
+	lastReceiverName = null
+	chatSessionWith = sender
 }
 
 /* command handlers */
@@ -157,15 +159,16 @@ const commands = {
 		}
 
 		api.sendMessage(message, receiver.userID, (err, res) => {
-			lastThread = res.threadID || res.messageID
+			lastReceiverName = rawReceiver
 			if (err) console.warn("ERROR!", err)
-			if (receiver.fullName != lastRecipient){
+			if (receiver.fullName != chatSessionWith){
 				console.log('')
-				console.log("\x1b[32m", receiver.fullName, "\x1b[34m", (new Date()).toLocaleString(), "\x1b[0m")
+				console.log("*", "\x1b[1m", "\x1b[32m", receiver.fullName, "\x1b[34m", (new Date()).toLocaleString(), "\x1b[0m")
+				console.log('')
 			}
 
-			console.log("\x1b[42m", "You", "\x1b[0m", ": "+message + "\n>")
-			lastRecipient = receiver.fullName
+			console.log("\x1b[1m", "\x1b[42m", "You", "\x1b[0m", ": "+message + "\n>")
+			chatSessionWith = receiver.fullName
 		})
 	},
 
@@ -183,7 +186,7 @@ const commands = {
 		// var body = rawCommand.substring(commandEnum.REPLY.length).trim()
 		api.sendMessage(body, lastThread, err => {
 			if (err) return console.error(err)
-			console.log("\x1b[42m", "You", "\x1b[0m", ": " + body);
+			console.log("\x1b[1m", "\x1b[42m", "You", "\x1b[0m", ": " + body);
 		})
 	},
 
@@ -216,6 +219,8 @@ function processCommand(rawCommand) {
 	if (!commandHandler) {
 		if (lastThread != null){
 			commands.reply("r "+rawCommand);
+		}else if(lastReceiverName != null){
+			commands.message('m "'+lastReceiverName+'" '+rawCommand);
 		}else{
 		}
 	} else {
