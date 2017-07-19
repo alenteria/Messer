@@ -10,6 +10,7 @@ const exec = require('child_process').exec;
 let api = {}
 let user = {}
 let lastThread = null
+let lastRecipient = null
 
 /* Command type constants */
 const commandEnum = {
@@ -99,13 +100,18 @@ function handleMessage(message) {
 		messageBody = message.body
 	}
 
+	if (lastRecipient != sender){
+		console.log(" ---------- "+sender+" ----------")
+	}
+
 	if (message.attachments.length == 0) {
-		console.log("░░░ "+sender + ": "  + (messageBody || unrenderableMessage) + "\n")
+		console.log("✅  "+sender + ": "  + (messageBody || unrenderableMessage) + "\n")
 	} else {
-		console.log("░░░ "+sender + ": \n" + (messageBody || unrenderableMessage)+ "\n")
+		console.log("✅  "+sender + ": \n" + (messageBody || unrenderableMessage)+ "\n")
 	}
 
 	lastThread = message.threadID
+	lastRecipient = sender
 }
 
 /* command handlers */
@@ -151,8 +157,12 @@ const commands = {
 		api.sendMessage(message, receiver.userID, (err, res) => {
 			lastThread = res.threadID || res.messageID
 			if (err) console.warn("ERROR!", err)
-			console.log(" ---------- "+receiver.fullName+" ----------")
-			console.log("░░░ You: " + message + "\n>")
+			if (receiver.fullName != lastRecipient){
+				console.log(" ---------- "+receiver.fullName+" ----------")
+			}
+
+			console.log("✅  You: " + message + "\n>")
+			lastRecipient = receiver.fullName
 		})
 	},
 
@@ -170,7 +180,7 @@ const commands = {
 		// var body = rawCommand.substring(commandEnum.REPLY.length).trim()
 		api.sendMessage(body, lastThread, err => {
 			if (err) return console.error(err)
-			console.log("░░░ You: "+body);
+			console.log("✅  You: "+body);
 		})
 	},
 
