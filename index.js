@@ -102,7 +102,7 @@ function handleMessage(message) {
 
 	if (lastRecipient != sender){
 		console.log('')
-		console.log("\x1b[5m", " ---------- ", "\x1b[0m", sender, "\x1b[5m", " ---------- ", "\x1b[0m")
+		console.log("\x1b[32m", sender, "\x1b[34m", (new Date()).toLocaleString(), "\x1b[0m")
 	}
 
 	if (message.attachments.length == 0) {
@@ -161,7 +161,7 @@ const commands = {
 			if (err) console.warn("ERROR!", err)
 			if (receiver.fullName != lastRecipient){
 				console.log('')
-				console.log("\x1b[5m", " ---------- ", "\x1b[0m", receiver.fullName, "\x1b[5m", " ---------- ", "\x1b[0m")
+				console.log("\x1b[32m", receiver.fullName, "\x1b[34m", (new Date()).toLocaleString(), "\x1b[0m")
 			}
 
 			console.log("\x1b[42m", "You", "\x1b[0m", ": "+message + "\n>")
