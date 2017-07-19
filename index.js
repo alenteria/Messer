@@ -217,7 +217,6 @@ function processCommand(rawCommand) {
 		if (lastThread != null){
 			commands.reply("r "+rawCommand);
 		}else{
-			console.error("Invalid command - check your syntax\n>")
 		}
 	} else {
 		commandHandler(rawCommand)
