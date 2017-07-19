@@ -101,13 +101,16 @@ function handleMessage(message) {
 	}
 
 	if (lastRecipient != sender){
-		console.log(" ---------- "+sender+" ----------")
+		console.log('')
+		console.log("\x1b[5m", " ---------- ", "\x1b[0m", sender, "\x1b[5m", " ---------- ", "\x1b[0m")
 	}
 
 	if (message.attachments.length == 0) {
-		console.log("✅  "+sender + ": "  + (messageBody || unrenderableMessage) + "\n")
+		console.log("")
+		console.log("\x1b[46m", sender, "\x1b[0m", ": "+(messageBody || unrenderableMessage))
 	} else {
-		console.log("✅  "+sender + ": \n" + (messageBody || unrenderableMessage)+ "\n")
+		console.log("")
+		console.log("\x1b[46m", sender, "\x1b[0m", ": "+(messageBody || unrenderableMessage))
 	}
 
 	lastThread = message.threadID
@@ -140,8 +143,7 @@ const commands = {
 		const message = decomposed[2].trim()
 
 		if (message.length == 0) {
-			console.warn("No message to send - check your syntax")
-			return processCommand("help")
+			return false
 		}
 
 		// Find the given reciever in the users friendlist
@@ -158,10 +160,11 @@ const commands = {
 			lastThread = res.threadID || res.messageID
 			if (err) console.warn("ERROR!", err)
 			if (receiver.fullName != lastRecipient){
-				console.log(" ---------- "+receiver.fullName+" ----------")
+				console.log('')
+				console.log("\x1b[5m", " ---------- ", "\x1b[0m", receiver.fullName, "\x1b[5m", " ---------- ", "\x1b[0m")
 			}
 
-			console.log("✅  You: " + message + "\n>")
+			console.log("\x1b[42m", "You", "\x1b[0m", ": "+message + "\n>")
 			lastRecipient = receiver.fullName
 		})
 	},
@@ -180,7 +183,7 @@ const commands = {
 		// var body = rawCommand.substring(commandEnum.REPLY.length).trim()
 		api.sendMessage(body, lastThread, err => {
 			if (err) return console.error(err)
-			console.log("✅  You: "+body);
+			console.log("\x1b[42m", "You", "\x1b[0m", ": " + body);
 		})
 	},
 
@@ -211,7 +214,11 @@ function processCommand(rawCommand) {
 	const commandHandler = commands[command]
 
 	if (!commandHandler) {
-		console.error("Invalid command - check your syntax\n>")
+		if (lastThread != null){
+			commands.reply("r "+rawCommand);
+		}else{
+			console.error("Invalid command - check your syntax\n>")
+		}
 	} else {
 		commandHandler(rawCommand)
 	}
