@@ -160,7 +160,7 @@ const commands = {
 		}
 
 		api.sendMessage(message, receiver.userID, (err, res) => {
-			lastReceiverName = rawReceiver
+			lastReceiverName = receiver.fullName
 			if (err) console.warn("ERROR!", err)
 			if (receiver.fullName != chatSessionWith){
 				console.log('')
