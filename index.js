@@ -88,11 +88,12 @@ function handleMessage(message) {
 	if (message.participantNames && message.participantNames.length > 1)
 		sender = "'" + sender + "'" + " (" + message.senderName + ")"
 
-	if (lastThread == message.threadID){
-		process.stderr.write("\x07")	// Terminal notification
-	}else{
-		exec("say new message from "+sender);
-	}
+	// if (lastThread == message.threadID){
+	// 	process.stderr.write("\x07")	// Terminal notification
+	// }else{
+	// 	exec("say new message from "+sender);
+	// }
+	exec(" afplay ~/Music/fb_tone.mp3")
 
 	let messageBody = null
 
